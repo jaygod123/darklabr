@@ -79,6 +79,65 @@ const enemies = [
   { name: 'Stone Golem', health: 40, damage: 10, description: 'An animated guardian of carved stone and ancient magic.', exp: 18 }
 ];
 
+// Boss definitions - 5 unique bosses with special mechanics
+const bosses = [
+  {
+    id: 'shadowlord',
+    name: 'The Shadow Lord',
+    health: 80,
+    damage: 15,
+    description: 'A towering figure wreathed in living darkness. Its presence chills your very soul.',
+    exp: 50,
+    encounterText: 'The shadows coalesce into a massive, terrifying form. The Shadow Lord has awakened!',
+    defeatText: 'The Shadow Lord dissolves into wisps of darkness, its essence scattered to the void.',
+    spawnDistance: 15
+  },
+  {
+    id: 'bonequeen',
+    name: 'The Bone Queen',
+    health: 120,
+    damage: 18,
+    description: 'An ancient lich crowned with a diadem of skulls. Necromantic energy crackles around her.',
+    exp: 75,
+    encounterText: 'The air grows cold as skeletal hands emerge from the ground. The Bone Queen rises!',
+    defeatText: 'The Bone Queen\'s crown shatters, and her form crumbles to ancient dust.',
+    spawnDistance: 30
+  },
+  {
+    id: 'flamedemon',
+    name: 'The Flame Demon',
+    health: 150,
+    damage: 22,
+    description: 'A massive creature of molten rock and hellfire. Its roar shakes the very foundations.',
+    exp: 100,
+    encounterText: 'The temperature rises drastically as flames burst from cracks in the stone. A Flame Demon emerges!',
+    defeatText: 'The Flame Demon\'s fire extinguishes with a thunderous roar, leaving only cooling obsidian.',
+    spawnDistance: 50
+  },
+  {
+    id: 'voidkraken',
+    name: 'The Void Kraken',
+    health: 200,
+    damage: 25,
+    description: 'An eldritch horror from beyond reality. Its tentacles writhe through dimensions unseen.',
+    exp: 150,
+    encounterText: 'Reality tears open as something impossible forces its way through. The Void Kraken has arrived!',
+    defeatText: 'The Void Kraken retreats through the dimensional rift, sealing the tear behind it.',
+    spawnDistance: 75
+  },
+  {
+    id: 'deathlord',
+    name: 'The Death Lord',
+    health: 300,
+    damage: 30,
+    description: 'The ultimate master of this dark realm. Death incarnate stands before you.',
+    exp: 250,
+    encounterText: 'The very air becomes still. Death itself materializes, wielding a scythe that cuts through souls.',
+    defeatText: 'The Death Lord nods with respect before fading away. You have proven yourself worthy.',
+    spawnDistance: 100
+  }
+];
+
 function App() {
   const [gameState, setGameState] = useState(initialGameState);
 
