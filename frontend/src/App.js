@@ -476,8 +476,9 @@ function App() {
 
           {/* Combat Interface */}
           {gameState.inCombat && gameState.enemy && (
-            <div className="combat-interface">
-              <div className="enemy-status">
+            <div className={`combat-interface ${gameState.enemy.isBoss ? 'boss-combat' : ''}`}>
+              <div className={`enemy-status ${gameState.enemy.isBoss ? 'boss-enemy' : ''}`}>
+                {gameState.enemy.isBoss && <div className="boss-warning">⚔️ BOSS BATTLE ⚔️</div>}
                 <strong>{gameState.enemy.name}</strong> - Health: {gameState.enemy.health}
               </div>
               <div className="combat-actions">
