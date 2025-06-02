@@ -303,6 +303,8 @@ function App() {
             <div className="status-item">Health: {gameState.player.health}/{gameState.player.maxHealth}</div>
             <div className="status-item">Level: {gameState.player.level}</div>
             <div className="status-item">Experience: {gameState.player.experience}</div>
+            <div className="status-item">Strength: {gameState.player.strength}</div>
+            <div className="status-item">Magic: {gameState.player.magic}</div>
             <div className="status-item">Location: ({gameState.player.x}, {gameState.player.y})</div>
           </div>
 
