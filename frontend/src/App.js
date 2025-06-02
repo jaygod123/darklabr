@@ -210,14 +210,41 @@ function App() {
     
     if (enemyHealth <= 0) {
       addMessage(`The ${gameState.enemy.name} falls defeated!`);
-      const expGained = 10 + Math.floor(Math.random() * 10);
+      const expGained = gameState.enemy.exp || 10;
       addMessage(`You gain ${expGained} experience.`);
+      
+      const newExp = gameState.player.experience + expGained;
+      const expNeeded = gameState.player.level * 30; // Level up every 30/60/90 exp
+      
+      let newLevel = gameState.player.level;
+      let newStrength = gameState.player.strength;
+      let newMagic = gameState.player.magic;
+      let newMaxHealth = gameState.player.maxHealth;
+      let newHealth = gameState.player.health;
+      
+      if (newExp >= expNeeded) {
+        newLevel += 1;
+        newStrength += 2;
+        newMagic += 1;
+        newMaxHealth += 10;
+        newHealth = Math.min(newHealth + 15, newMaxHealth); // Heal 15 HP on level up
+        addMessage(`*** LEVEL UP! You are now level ${newLevel}! ***`);
+        addMessage(`Strength increased to ${newStrength}, Magic to ${newMagic}!`);
+      }
       
       setGameState(prev => ({
         ...prev,
         inCombat: false,
         enemy: null,
-        player: { ...prev.player, experience: prev.player.experience + expGained },
+        player: { 
+          ...prev.player, 
+          experience: newExp,
+          level: newLevel,
+          strength: newStrength,
+          magic: newMagic,
+          maxHealth: newMaxHealth,
+          health: newHealth
+        },
         currentRoom: { ...prev.currentRoom, hasEnemy: false, enemy: null }
       }));
       return;
