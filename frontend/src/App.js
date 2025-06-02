@@ -304,12 +304,20 @@ function App() {
     addMessage(`You attack the ${gameState.enemy.name} for ${playerDamage} damage.`);
     
     if (enemyHealth <= 0) {
-      addMessage(`The ${gameState.enemy.name} falls defeated!`);
+      const isBoss = gameState.enemy.isBoss;
+      
+      if (isBoss) {
+        addMessage(gameState.enemy.defeatText);
+        addMessage(`*** ${gameState.enemy.name.toUpperCase()} DEFEATED! ***`);
+      } else {
+        addMessage(`The ${gameState.enemy.name} falls defeated!`);
+      }
+      
       const expGained = gameState.enemy.exp || 10;
       addMessage(`You gain ${expGained} experience.`);
       
       const newExp = gameState.player.experience + expGained;
-      const expNeeded = gameState.player.level * 30; // Level up every 30/60/90 exp
+      const expNeeded = gameState.player.level * 30;
       
       let newLevel = gameState.player.level;
       let newStrength = gameState.player.strength;
@@ -322,9 +330,37 @@ function App() {
         newStrength += 2;
         newMagic += 1;
         newMaxHealth += 10;
-        newHealth = Math.min(newHealth + 15, newMaxHealth); // Heal 15 HP on level up
+        newHealth = Math.min(newHealth + 15, newMaxHealth);
         addMessage(`*** LEVEL UP! You are now level ${newLevel}! ***`);
         addMessage(`Strength increased to ${newStrength}, Magic to ${newMagic}!`);
+      }
+      
+      let newBossesDefeated = [...gameState.bossesDefeated];
+      let newEndlessMode = gameState.endlessMode;
+      let newEndlessDepth = gameState.endlessDepth;
+      let newTotalEnemiesDefeated = gameState.totalEnemiesDefeated + 1;
+      
+      // Handle boss defeat
+      if (isBoss) {
+        newBossesDefeated.push(gameState.enemy.id);
+        
+        if (newBossesDefeated.length === bosses.length && !gameState.endlessMode) {
+          newEndlessMode = true;
+          newEndlessDepth = 1;
+          addMessage('*** ALL BOSSES DEFEATED! ***');
+          addMessage('*** ENDLESS MODE ACTIVATED! ***');
+          addMessage('Enemies will now grow stronger as you progress deeper into the abyss...');
+        } else {
+          const remaining = bosses.length - newBossesDefeated.length;
+          addMessage(`${remaining} boss${remaining !== 1 ? 'es' : ''} remaining.`);
+        }
+      }
+      
+      // Increment endless depth every 10 enemies in endless mode
+      if (newEndlessMode && newTotalEnemiesDefeated % 10 === 0) {
+        newEndlessDepth += 1;
+        addMessage(`*** DESCENDED TO DEPTH ${newEndlessDepth}! ***`);
+        addMessage('The enemies grow stronger...');
       }
       
       setGameState(prev => ({
@@ -340,6 +376,10 @@ function App() {
           maxHealth: newMaxHealth,
           health: newHealth
         },
+        bossesDefeated: newBossesDefeated,
+        endlessMode: newEndlessMode,
+        endlessDepth: newEndlessDepth,
+        totalEnemiesDefeated: newTotalEnemiesDefeated,
         currentRoom: { ...prev.currentRoom, hasEnemy: false, enemy: null }
       }));
       return;
