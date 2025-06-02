@@ -67,9 +67,12 @@ const roomTypes = [
 
 // Basic enemy types
 const enemies = [
-  { name: 'Shadow', health: 20, damage: 5, description: 'A writhing mass of darkness that seems to absorb light.' },
-  { name: 'Skeleton Warrior', health: 30, damage: 8, description: 'Ancient bones held together by dark magic.' },
-  { name: 'Cave Rat', health: 10, damage: 3, description: 'A diseased rodent with glowing red eyes.' }
+  { name: 'Shadow', health: 20, damage: 5, description: 'A writhing mass of darkness that seems to absorb light.', exp: 8 },
+  { name: 'Skeleton Warrior', health: 30, damage: 8, description: 'Ancient bones held together by dark magic.', exp: 12 },
+  { name: 'Cave Rat', health: 10, damage: 3, description: 'A diseased rodent with glowing red eyes.', exp: 5 },
+  { name: 'Ghoul', health: 25, damage: 7, description: 'A decomposing creature that hungers for living flesh.', exp: 10 },
+  { name: 'Dark Sprite', health: 15, damage: 6, description: 'A malevolent fairy creature crackling with dark energy.', exp: 9 },
+  { name: 'Stone Golem', health: 40, damage: 10, description: 'An animated guardian of carved stone and ancient magic.', exp: 18 }
 ];
 
 function App() {
