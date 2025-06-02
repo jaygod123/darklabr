@@ -89,6 +89,76 @@ body {
   padding: 5px 0;
 }
 
+/* Boss Progress / Endless Mode Status */
+.progress-status {
+  padding: 15px;
+  background: rgba(42, 42, 42, 0.3);
+  border: 1px solid #333;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.boss-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.boss-title {
+  color: #ddd;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.boss-list {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.5rem;
+}
+
+.boss-indicator {
+  transition: all 0.3s ease;
+}
+
+.boss-indicator.defeated {
+  opacity: 1;
+}
+
+.boss-indicator.remaining {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.endless-status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.endless-indicator {
+  color: #ff6b6b;
+  font-size: 1.1rem;
+  font-weight: bold;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 5px #ff6b6b, 0 0 10px #ff6b6b; }
+  to { text-shadow: 0 0 10px #ff6b6b, 0 0 20px #ff6b6b, 0 0 30px #ff6b6b; }
+}
+
+.endless-depth {
+  color: #ffaa00;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.endless-kills {
+  color: #888;
+  font-size: 0.9rem;
+}
+
 /* Room Display */
 .room-display {
   min-height: 120px;
