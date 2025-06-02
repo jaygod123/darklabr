@@ -145,8 +145,24 @@ function App() {
   const generateRoom = (x, y) => {
     const roomSeed = Math.abs(x * 1000 + y);
     const random = (roomSeed * 9301 + 49297) % 233280 / 233280;
+    const distanceFromStart = Math.abs(x) + Math.abs(y);
     
-    // Weighted room selection
+    // Check for boss encounters
+    for (const boss of bosses) {
+      if (!gameState.bossesDefeated.includes(boss.id) && 
+          distanceFromStart === boss.spawnDistance) {
+        return {
+          x, y,
+          type: 'boss_chamber',
+          description: `A massive chamber pulses with malevolent energy. Something ancient and powerful dwells here.`,
+          hasEnemy: true,
+          enemy: { ...boss, health: boss.health, isBoss: true },
+          visited: false
+        };
+      }
+    }
+    
+    // Weighted room selection for normal rooms
     const totalWeight = roomTypes.reduce((sum, room) => sum + room.weight, 0);
     let weightedRandom = random * totalWeight;
     let selectedRoom = roomTypes[0];
@@ -164,14 +180,25 @@ function App() {
     
     if (selectedRoom.hasEnemy && random < (selectedRoom.enemyChance || 0)) {
       hasEnemy = true;
-      const enemyRandom = (random * 3) % 1; // Different seed for enemy selection
-      const enemyType = enemies[Math.floor(enemyRandom * enemies.length)];
+      const enemyRandom = (random * 3) % 1;
+      let enemyType = enemies[Math.floor(enemyRandom * enemies.length)];
+      
+      // Apply endless mode scaling
+      if (gameState.endlessMode) {
+        const scalingFactor = 1 + (gameState.endlessDepth * 0.2); // 20% increase per depth level
+        enemyType = {
+          ...enemyType,
+          health: Math.floor(enemyType.health * scalingFactor),
+          damage: Math.floor(enemyType.damage * scalingFactor),
+          exp: Math.floor(enemyType.exp * scalingFactor)
+        };
+      }
+      
       enemy = { ...enemyType, health: enemyType.health };
     }
     
     return {
-      x,
-      y,
+      x, y,
       type: selectedRoom.type,
       description: selectedRoom.description,
       hasEnemy,
