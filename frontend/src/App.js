@@ -443,6 +443,28 @@ function App() {
             <div className="status-item">Location: ({gameState.player.x}, {gameState.player.y})</div>
           </div>
 
+          {/* Boss Progress / Endless Mode Status */}
+          <div className="progress-status">
+            {gameState.endlessMode ? (
+              <div className="endless-status">
+                <div className="endless-indicator">🌀 ENDLESS MODE ACTIVE 🌀</div>
+                <div className="endless-depth">Depth: {gameState.endlessDepth}</div>
+                <div className="endless-kills">Enemies Defeated: {gameState.totalEnemiesDefeated}</div>
+              </div>
+            ) : (
+              <div className="boss-progress">
+                <div className="boss-title">Boss Progress: {gameState.bossesDefeated.length}/{bosses.length}</div>
+                <div className="boss-list">
+                  {bosses.map((boss, index) => (
+                    <span key={boss.id} className={`boss-indicator ${gameState.bossesDefeated.includes(boss.id) ? 'defeated' : 'remaining'}`}>
+                      {gameState.bossesDefeated.includes(boss.id) ? '💀' : '👑'}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Current Room */}
           <div className="room-display">
             {gameState.currentRoom && (
