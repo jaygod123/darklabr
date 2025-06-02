@@ -80,21 +80,34 @@ function App() {
     const roomSeed = Math.abs(x * 1000 + y);
     const random = (roomSeed * 9301 + 49297) % 233280 / 233280;
     
-    const roomType = roomTypes[Math.floor(random * roomTypes.length)];
+    // Weighted room selection
+    const totalWeight = roomTypes.reduce((sum, room) => sum + room.weight, 0);
+    let weightedRandom = random * totalWeight;
+    let selectedRoom = roomTypes[0];
+    
+    for (const roomType of roomTypes) {
+      weightedRandom -= roomType.weight;
+      if (weightedRandom <= 0) {
+        selectedRoom = roomType;
+        break;
+      }
+    }
+    
     let hasEnemy = false;
     let enemy = null;
     
-    if (roomType.hasEnemy && random < (roomType.enemyChance || 0)) {
+    if (selectedRoom.hasEnemy && random < (selectedRoom.enemyChance || 0)) {
       hasEnemy = true;
-      const enemyType = enemies[Math.floor((random * 2) * enemies.length)];
+      const enemyRandom = (random * 3) % 1; // Different seed for enemy selection
+      const enemyType = enemies[Math.floor(enemyRandom * enemies.length)];
       enemy = { ...enemyType, health: enemyType.health };
     }
     
     return {
       x,
       y,
-      type: roomType.type,
-      description: roomType.description,
+      type: selectedRoom.type,
+      description: selectedRoom.description,
       hasEnemy,
       enemy,
       visited: false
