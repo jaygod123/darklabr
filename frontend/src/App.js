@@ -1,52 +1,307 @@
-import { useEffect } from "react";
-import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import './App.css';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+// Game State Management
+const initialGameState = {
+  player: {
+    x: 0,
+    y: 0,
+    health: 100,
+    maxHealth: 100,
+    level: 1,
+    experience: 0,
+    strength: 10,
+    magic: 10
+  },
+  currentRoom: null,
+  gameStarted: false,
+  inCombat: false,
+  enemy: null,
+  messages: [],
+  dungeon: {}
+};
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
+// Room types and descriptions
+const roomTypes = [
+  {
+    type: 'empty',
+    description: 'A dark, empty chamber. Dust motes dance in what little light filters through cracks in the stone.',
+    hasEnemy: false
+  },
+  {
+    type: 'corridor',
+    description: 'A narrow stone corridor stretches before you. The walls are cold and damp to the touch.',
+    hasEnemy: false
+  },
+  {
+    type: 'chamber',
+    description: 'An ancient chamber with crumbling pillars. Strange shadows seem to move in the corners.',
+    hasEnemy: true,
+    enemyChance: 0.3
+  },
+  {
+    type: 'vault',
+    description: 'A forgotten vault filled with the echoes of ages past. Something valuable might be hidden here.',
+    hasEnemy: true,
+    enemyChance: 0.5
+  }
+];
+
+// Basic enemy types
+const enemies = [
+  { name: 'Shadow', health: 20, damage: 5, description: 'A writhing mass of darkness that seems to absorb light.' },
+  { name: 'Skeleton Warrior', health: 30, damage: 8, description: 'Ancient bones held together by dark magic.' },
+  { name: 'Cave Rat', health: 10, damage: 3, description: 'A diseased rodent with glowing red eyes.' }
+];
+
+function App() {
+  const [gameState, setGameState] = useState(initialGameState);
+
+  // Generate a room at coordinates
+  const generateRoom = (x, y) => {
+    const roomSeed = Math.abs(x * 1000 + y);
+    const random = (roomSeed * 9301 + 49297) % 233280 / 233280;
+    
+    const roomType = roomTypes[Math.floor(random * roomTypes.length)];
+    let hasEnemy = false;
+    let enemy = null;
+    
+    if (roomType.hasEnemy && random < (roomType.enemyChance || 0)) {
+      hasEnemy = true;
+      const enemyType = enemies[Math.floor((random * 2) * enemies.length)];
+      enemy = { ...enemyType, health: enemyType.health };
+    }
+    
+    return {
+      x,
+      y,
+      type: roomType.type,
+      description: roomType.description,
+      hasEnemy,
+      enemy,
+      visited: false
+    };
+  };
+
+  // Get or create room
+  const getRoom = (x, y) => {
+    const key = `${x},${y}`;
+    if (!gameState.dungeon[key]) {
+      const newDungeon = { ...gameState.dungeon };
+      newDungeon[key] = generateRoom(x, y);
+      setGameState(prev => ({ ...prev, dungeon: newDungeon }));
+      return newDungeon[key];
+    }
+    return gameState.dungeon[key];
+  };
+
+  // Add message to game log
+  const addMessage = (message) => {
+    setGameState(prev => ({
+      ...prev,
+      messages: [message, ...prev.messages.slice(0, 9)] // Keep last 10 messages
+    }));
+  };
+
+  // Start the game
+  const startGame = () => {
+    const startingRoom = generateRoom(0, 0);
+    startingRoom.visited = true;
+    
+    setGameState(prev => ({
+      ...prev,
+      gameStarted: true,
+      currentRoom: startingRoom,
+      dungeon: { '0,0': startingRoom }
+    }));
+    
+    addMessage('You awaken in a dark dungeon. The air is thick with ancient dust and forgotten secrets.');
+    addMessage('You can move using the directional buttons below.');
+  };
+
+  // Move player
+  const movePlayer = (direction) => {
+    if (gameState.inCombat) {
+      addMessage('You cannot move while in combat!');
+      return;
+    }
+
+    let newX = gameState.player.x;
+    let newY = gameState.player.y;
+
+    switch (direction) {
+      case 'north': newY += 1; break;
+      case 'south': newY -= 1; break;
+      case 'east': newX += 1; break;
+      case 'west': newX -= 1; break;
+      default: return;
+    }
+
+    const newRoom = getRoom(newX, newY);
+    
+    setGameState(prev => {
+      const updatedDungeon = { ...prev.dungeon };
+      updatedDungeon[`${newX},${newY}`] = { ...newRoom, visited: true };
+      
+      return {
+        ...prev,
+        player: { ...prev.player, x: newX, y: newY },
+        currentRoom: updatedDungeon[`${newX},${newY}`],
+        dungeon: updatedDungeon
+      };
+    });
+
+    addMessage(`You move ${direction}.`);
+    addMessage(newRoom.description);
+    
+    if (newRoom.hasEnemy && newRoom.enemy) {
+      addMessage(`A ${newRoom.enemy.name} emerges from the shadows!`);
+      addMessage(newRoom.enemy.description);
+      setGameState(prev => ({
+        ...prev,
+        inCombat: true,
+        enemy: { ...newRoom.enemy }
+      }));
     }
   };
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
+  // Combat system
+  const attack = () => {
+    if (!gameState.enemy || !gameState.inCombat) return;
+
+    const playerDamage = Math.floor(Math.random() * gameState.player.strength) + 5;
+    const enemyHealth = gameState.enemy.health - playerDamage;
+    
+    addMessage(`You attack the ${gameState.enemy.name} for ${playerDamage} damage.`);
+    
+    if (enemyHealth <= 0) {
+      addMessage(`The ${gameState.enemy.name} falls defeated!`);
+      const expGained = 10 + Math.floor(Math.random() * 10);
+      addMessage(`You gain ${expGained} experience.`);
+      
+      setGameState(prev => ({
+        ...prev,
+        inCombat: false,
+        enemy: null,
+        player: { ...prev.player, experience: prev.player.experience + expGained },
+        currentRoom: { ...prev.currentRoom, hasEnemy: false, enemy: null }
+      }));
+      return;
+    }
+
+    // Enemy attacks back
+    const enemyDamage = Math.floor(Math.random() * gameState.enemy.damage) + 2;
+    const playerHealth = gameState.player.health - enemyDamage;
+    
+    addMessage(`The ${gameState.enemy.name} attacks you for ${enemyDamage} damage.`);
+    
+    if (playerHealth <= 0) {
+      addMessage('You have been defeated! The darkness claims you...');
+      setGameState(prev => ({
+        ...prev,
+        player: { ...prev.player, health: 0 },
+        inCombat: false
+      }));
+    } else {
+      setGameState(prev => ({
+        ...prev,
+        enemy: { ...prev.enemy, health: enemyHealth },
+        player: { ...prev.player, health: playerHealth }
+      }));
+    }
+  };
+
+  const flee = () => {
+    if (!gameState.inCombat) return;
+    
+    addMessage('You flee from combat!');
+    setGameState(prev => ({
+      ...prev,
+      inCombat: false,
+      enemy: null
+    }));
+    
+    // Move player back to previous safe location
+    movePlayer('south');
+  };
 
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+    <div className="game-container">
+      {!gameState.gameStarted ? (
+        <div className="intro-screen">
+          <h1 className="game-title">The Dark Labyrinth</h1>
+          <p className="game-subtitle">A journey into forgotten depths</p>
+          <button onClick={startGame} className="start-button">
+            Begin
+          </button>
+        </div>
+      ) : (
+        <div className="game-interface">
+          {/* Player Status */}
+          <div className="player-status">
+            <div className="status-item">Health: {gameState.player.health}/{gameState.player.maxHealth}</div>
+            <div className="status-item">Level: {gameState.player.level}</div>
+            <div className="status-item">Experience: {gameState.player.experience}</div>
+            <div className="status-item">Location: ({gameState.player.x}, {gameState.player.y})</div>
+          </div>
 
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+          {/* Current Room */}
+          <div className="room-display">
+            {gameState.currentRoom && (
+              <div className="room-description">
+                {gameState.currentRoom.description}
+              </div>
+            )}
+          </div>
+
+          {/* Combat Interface */}
+          {gameState.inCombat && gameState.enemy && (
+            <div className="combat-interface">
+              <div className="enemy-status">
+                <strong>{gameState.enemy.name}</strong> - Health: {gameState.enemy.health}
+              </div>
+              <div className="combat-actions">
+                <button onClick={attack} className="action-button">Attack</button>
+                <button onClick={flee} className="action-button">Flee</button>
+              </div>
+            </div>
+          )}
+
+          {/* Movement Controls */}
+          {!gameState.inCombat && gameState.player.health > 0 && (
+            <div className="movement-controls">
+              <div className="movement-row">
+                <button onClick={() => movePlayer('north')} className="movement-button">North</button>
+              </div>
+              <div className="movement-row">
+                <button onClick={() => movePlayer('west')} className="movement-button">West</button>
+                <button onClick={() => movePlayer('east')} className="movement-button">East</button>
+              </div>
+              <div className="movement-row">
+                <button onClick={() => movePlayer('south')} className="movement-button">South</button>
+              </div>
+            </div>
+          )}
+
+          {/* Game Messages */}
+          <div className="message-log">
+            {gameState.messages.map((message, index) => (
+              <div key={index} className="message">
+                {message}
+              </div>
+            ))}
+          </div>
+
+          {/* Game Over */}
+          {gameState.player.health <= 0 && (
+            <div className="game-over">
+              <button onClick={() => window.location.reload()} className="restart-button">
+                Begin Again
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
