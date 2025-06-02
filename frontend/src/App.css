@@ -184,11 +184,40 @@ body {
   border-radius: 3px;
 }
 
+.combat-interface.boss-combat {
+  background: rgba(120, 20, 20, 0.4);
+  border: 2px solid #aa4444;
+  animation: pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+  from { border-color: #aa4444; box-shadow: 0 0 5px #aa4444; }
+  to { border-color: #ff6666; box-shadow: 0 0 15px #ff6666; }
+}
+
 .enemy-status {
   color: #ff8888;
   font-size: 1.1rem;
   margin-bottom: 15px;
   text-align: center;
+}
+
+.enemy-status.boss-enemy {
+  color: #ffaaaa;
+  font-size: 1.2rem;
+}
+
+.boss-warning {
+  color: #ff4444;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  animation: flash 1s ease-in-out infinite alternate;
+}
+
+@keyframes flash {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
 }
 
 .combat-actions {
