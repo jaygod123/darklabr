@@ -18,7 +18,11 @@ const initialGameState = {
   inCombat: false,
   enemy: null,
   messages: [],
-  dungeon: {}
+  dungeon: {},
+  bossesDefeated: [],
+  endlessMode: false,
+  endlessDepth: 0,
+  totalEnemiesDefeated: 0
 };
 
 // Room types and descriptions
