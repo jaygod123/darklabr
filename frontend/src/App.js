@@ -279,7 +279,12 @@ function App() {
     addMessage(newRoom.description);
     
     if (newRoom.hasEnemy && newRoom.enemy) {
-      addMessage(`A ${newRoom.enemy.name} emerges from the shadows!`);
+      if (newRoom.enemy.isBoss) {
+        addMessage(newRoom.enemy.encounterText);
+        addMessage(`*** ${newRoom.enemy.name.toUpperCase()} APPEARS! ***`);
+      } else {
+        addMessage(`A ${newRoom.enemy.name} emerges from the shadows!`);
+      }
       addMessage(newRoom.enemy.description);
       setGameState(prev => ({
         ...prev,
