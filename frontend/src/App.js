@@ -22,7 +22,9 @@ const initialGameState = {
   bossesDefeated: [],
   endlessMode: false,
   endlessDepth: 0,
-  totalEnemiesDefeated: 0
+  totalEnemiesDefeated: 0,
+  combatEffect: null,
+  showMinimap: true
 };
 
 // Visual representations
