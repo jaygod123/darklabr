@@ -431,12 +431,15 @@ function App() {
   const attack = () => {
     if (!gameState.enemy || !gameState.inCombat) return;
 
+    triggerCombatEffect('playerAttack');
+    
     const playerDamage = Math.floor(Math.random() * gameState.player.strength) + 5;
     const enemyHealth = gameState.enemy.health - playerDamage;
     
     addMessage(`You attack the ${gameState.enemy.name} for ${playerDamage} damage.`);
     
     if (enemyHealth <= 0) {
+      triggerCombatEffect('damage');
       const isBoss = gameState.enemy.isBoss;
       
       if (isBoss) {
@@ -466,6 +469,7 @@ function App() {
         newHealth = Math.min(newHealth + 15, newMaxHealth);
         addMessage(`*** LEVEL UP! You are now level ${newLevel}! ***`);
         addMessage(`Strength increased to ${newStrength}, Magic to ${newMagic}!`);
+        triggerCombatEffect('heal');
       }
       
       let newBossesDefeated = [...gameState.bossesDefeated];
@@ -519,25 +523,28 @@ function App() {
     }
 
     // Enemy attacks back
-    const enemyDamage = Math.floor(Math.random() * gameState.enemy.damage) + 2;
-    const playerHealth = gameState.player.health - enemyDamage;
-    
-    addMessage(`The ${gameState.enemy.name} attacks you for ${enemyDamage} damage.`);
-    
-    if (playerHealth <= 0) {
-      addMessage('You have been defeated! The darkness claims you...');
-      setGameState(prev => ({
-        ...prev,
-        player: { ...prev.player, health: 0 },
-        inCombat: false
-      }));
-    } else {
-      setGameState(prev => ({
-        ...prev,
-        enemy: { ...prev.enemy, health: enemyHealth },
-        player: { ...prev.player, health: playerHealth }
-      }));
-    }
+    setTimeout(() => {
+      triggerCombatEffect('enemyAttack');
+      const enemyDamage = Math.floor(Math.random() * gameState.enemy.damage) + 2;
+      const playerHealth = gameState.player.health - enemyDamage;
+      
+      addMessage(`The ${gameState.enemy.name} attacks you for ${enemyDamage} damage.`);
+      
+      if (playerHealth <= 0) {
+        addMessage('You have been defeated! The darkness claims you...');
+        setGameState(prev => ({
+          ...prev,
+          player: { ...prev.player, health: 0 },
+          inCombat: false
+        }));
+      } else {
+        setGameState(prev => ({
+          ...prev,
+          enemy: { ...prev.enemy, health: enemyHealth },
+          player: { ...prev.player, health: playerHealth }
+        }));
+      }
+    }, 1200);
   };
 
   const flee = () => {
