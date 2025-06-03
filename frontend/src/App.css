@@ -64,10 +64,10 @@ body {
 
 /* Game Interface */
 .game-interface {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-rows: auto auto auto auto auto 1fr;
+  grid-template-rows: auto auto auto auto auto auto 1fr;
   gap: 20px;
   min-height: 100vh;
 }
