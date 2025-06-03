@@ -141,6 +141,50 @@ const combatEffects = {
   heal: ["♥", "❤", "💚"]
 };
 
+// Room types and weights
+const roomTypes = [
+  {
+    type: 'empty',
+    description: roomVisuals.empty.description,
+    hasEnemy: false,
+    weight: 1
+  },
+  {
+    type: 'corridor',
+    description: roomVisuals.corridor.description,
+    hasEnemy: false,
+    weight: 1
+  },
+  {
+    type: 'chamber',
+    description: roomVisuals.chamber.description,
+    hasEnemy: true,
+    enemyChance: 0.95,
+    weight: 5
+  },
+  {
+    type: 'vault',
+    description: roomVisuals.vault.description,
+    hasEnemy: true,
+    enemyChance: 0.98,
+    weight: 4
+  },
+  {
+    type: 'crypt',
+    description: roomVisuals.crypt.description,
+    hasEnemy: true,
+    enemyChance: 1.0,
+    weight: 3
+  },
+  {
+    type: 'lair',
+    description: roomVisuals.lair.description,
+    hasEnemy: true,
+    enemyChance: 1.0,
+    weight: 2
+  }
+];
+
 
 // Basic enemy types
 const enemies = [
