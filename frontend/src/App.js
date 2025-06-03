@@ -140,47 +140,7 @@ const combatEffects = {
   damage: ["💥", "☆", "✶"],
   heal: ["♥", "❤", "💚"]
 };
-  {
-    type: 'empty',
-    description: 'A dark, empty chamber. Dust motes dance in what little light filters through cracks in the stone.',
-    hasEnemy: false,
-    weight: 1
-  },
-  {
-    type: 'corridor',
-    description: 'A narrow stone corridor stretches before you. The walls are cold and damp to the touch.',
-    hasEnemy: false,
-    weight: 1
-  },
-  {
-    type: 'chamber',
-    description: 'An ancient chamber with crumbling pillars. Strange shadows seem to move in the corners.',
-    hasEnemy: true,
-    enemyChance: 0.95,
-    weight: 5
-  },
-  {
-    type: 'vault',
-    description: 'A forgotten vault filled with the echoes of ages past. Something valuable might be hidden here.',
-    hasEnemy: true,
-    enemyChance: 0.98,
-    weight: 4
-  },
-  {
-    type: 'crypt',
-    description: 'Ancient burial chambers line the walls. The air is thick with malevolent presence.',
-    hasEnemy: true,
-    enemyChance: 1.0,
-    weight: 3
-  },
-  {
-    type: 'lair',
-    description: 'A creature\'s lair scattered with bones and refuse. Danger lurks in every shadow.',
-    hasEnemy: true,
-    enemyChance: 1.0,
-    weight: 2
-  }
-];
+
 
 // Basic enemy types
 const enemies = [
