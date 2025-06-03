@@ -539,4 +539,29 @@ body {
     flex-direction: column;
     align-items: center;
   }
+
+  /* Mobile visual adjustments */
+  .room-visual-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  
+  .minimap {
+    order: -1;
+  }
+  
+  .ascii-room {
+    font-size: 12px;
+    padding: 10px;
+  }
+  
+  .player-sprite,
+  .enemy-sprite {
+    font-size: 14px;
+  }
+  
+  .minimap-grid {
+    grid-template-columns: repeat(15, 6px);
+    grid-template-rows: repeat(15, 6px);
+  }
 }
