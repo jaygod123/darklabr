@@ -348,6 +348,18 @@ function App() {
     }));
   };
 
+  // Trigger combat effect
+  const triggerCombatEffect = (effectType) => {
+    const effects = combatEffects[effectType];
+    const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+    
+    setGameState(prev => ({ ...prev, combatEffect: randomEffect }));
+    
+    setTimeout(() => {
+      setGameState(prev => ({ ...prev, combatEffect: null }));
+    }, 1000);
+  };
+
   // Start the game
   const startGame = () => {
     const startingRoom = generateRoom(0, 0);
