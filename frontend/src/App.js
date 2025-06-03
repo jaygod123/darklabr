@@ -271,7 +271,8 @@ function App() {
         return {
           x, y,
           type: 'boss_chamber',
-          description: `A massive chamber pulses with malevolent energy. Something ancient and powerful dwells here.`,
+          description: roomVisuals.boss_chamber.description,
+          visual: roomVisuals.boss_chamber.ascii,
           hasEnemy: true,
           enemy: { ...boss, health: boss.health, isBoss: true },
           visited: false
@@ -302,7 +303,7 @@ function App() {
       
       // Apply endless mode scaling
       if (gameState.endlessMode) {
-        const scalingFactor = 1 + (gameState.endlessDepth * 0.2); // 20% increase per depth level
+        const scalingFactor = 1 + (gameState.endlessDepth * 0.2);
         enemyType = {
           ...enemyType,
           health: Math.floor(enemyType.health * scalingFactor),
@@ -318,6 +319,7 @@ function App() {
       x, y,
       type: selectedRoom.type,
       description: selectedRoom.description,
+      visual: roomVisuals[selectedRoom.type].ascii,
       hasEnemy,
       enemy,
       visited: false
