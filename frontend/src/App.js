@@ -605,7 +605,68 @@ function App() {
             )}
           </div>
 
-          {/* Current Room */}
+          {/* Visual Room Display */}
+          <div className="room-visual-container">
+            <div className="room-visual">
+              {gameState.currentRoom && gameState.currentRoom.visual && (
+                <div className="ascii-room">
+                  {gameState.currentRoom.visual.map((line, index) => (
+                    <div key={index} className="ascii-line">
+                      {line}
+                    </div>
+                  ))}
+                  {/* Player and Enemy Sprites */}
+                  <div className="sprite-overlay">
+                    <div className="player-sprite">{sprites.player}</div>
+                    {gameState.currentRoom.hasEnemy && gameState.currentRoom.enemy && (
+                      <div className={`enemy-sprite ${gameState.currentRoom.enemy.isBoss ? 'boss-sprite' : ''}`}>
+                        {gameState.currentRoom.enemy.isBoss 
+                          ? sprites.bosses[gameState.currentRoom.enemy.name] || '♔'
+                          : sprites.enemies[gameState.currentRoom.enemy.name] || '●'
+                        }
+                      </div>
+                    )}
+                    {/* Combat Effect Overlay */}
+                    {gameState.combatEffect && (
+                      <div className="combat-effect">{gameState.combatEffect}</div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            
+            {/* Minimap */}
+            {gameState.showMinimap && (
+              <div className="minimap">
+                <div className="minimap-title">Explored Areas</div>
+                <div className="minimap-grid">
+                  {Object.keys(gameState.dungeon).map(key => {
+                    const [x, y] = key.split(',').map(Number);
+                    const room = gameState.dungeon[key];
+                    const isCurrentRoom = x === gameState.player.x && y === gameState.player.y;
+                    
+                    return (
+                      <div
+                        key={key}
+                        className={`minimap-room ${isCurrentRoom ? 'current-room' : ''} ${room.type}`}
+                        style={{
+                          gridColumn: x + 10, // Offset to center the grid
+                          gridRow: -y + 10    // Invert Y for proper display
+                        }}
+                        title={`(${x}, ${y}) - ${room.type}`}
+                      >
+                        {isCurrentRoom ? sprites.player : 
+                         room.type === 'boss_chamber' ? '♔' :
+                         room.hasEnemy ? '●' : '·'}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Current Room Description */}
           <div className="room-display">
             {gameState.currentRoom && (
               <div className="room-description">
